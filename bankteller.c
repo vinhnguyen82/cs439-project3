@@ -25,6 +25,12 @@ void teller_check_in(p_teller teller)
    teller->doing_service = 0;
  
    // TODO: add teller to list
+   if (teller_list == NULL) {
+      teller_list = teller;
+   } else {
+      teller->next = teller_list->next;
+      teller_list = teller;
+   }
 }
 
 void teller_check_out(p_teller teller)
@@ -39,18 +45,31 @@ void teller_check_out(p_teller teller)
 
 p_teller do_banking(int customer_id)
 {
+   pthread_mutex_lock(&mutex);
+
    // TODO: check if list contains a teller (=teller is available)
    // if not, wait for teller to become available 
- 
+   while (teller_list == NULL) {
+      pthread_cond_wait(&teller_available, &mutex)
+   }
+
    printf("Customer %d is served by teller %d\n", customer_id, teller->id);
    teller->doing_service = 1;
+   pthread_mutex_unlock(&mutex);
 
    return teller;
 }
 
 void finish_banking(int customer_id, p_teller teller)
 {
+   pthread_mutex_lock(&mutex);
+   while (teller.doing_service) {
+      pthread_cond_wait(&teller.done, &mutex);
+   }
    printf("Customer %d is done with teller %d\n", customer_id, teller->id);
+
+   // Put teller back to the teller_list
+   // change the teller_available to true
 
    teller->doing_service = 0;
    // TODO: re-enter teller into list
@@ -112,6 +131,7 @@ int main(void)
    int i;
 
    // TODO: initialize mutexes/condition variables here
+   pthread_mutex_init(&mutex, NULL);
 
    for (i=0; i<NUM_TELLERS; i++) 
    { 
@@ -119,6 +139,7 @@ int main(void)
       tellers[i].next = NULL;
       
       // TODO: create teller threads here
+      pthread_create(&tellers[i].thread, NULL, )
    }
 
    pthread_t thread;
