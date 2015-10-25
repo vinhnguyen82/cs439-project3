@@ -2,7 +2,6 @@ CC=gcc
 LD=gcc
 
 RM=rm
-
 CFLAGS+=-Wall
 CFLAGS+=-Wunused
 CFLAGS+=-pedantic
@@ -10,13 +9,12 @@ CFLAGS+=-Werror
 CFLAGS+=-pthread
 
 OBJECTS:=bankteller.o
-OBJECTS+=main.o
 
-PROG:=prog
+PROG:=bank
 
 .PHONY: clean
 
-all: prog
+all: bank
 
 $(OBJECTS): %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $< 
