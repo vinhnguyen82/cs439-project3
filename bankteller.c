@@ -5,6 +5,8 @@
 #include <pthread.h>
 #include <unistd.h>
 
+// #define DEBUG
+
 static pthread_mutex_t mutex;
 static pthread_cond_t teller_available;
 
@@ -110,6 +112,9 @@ void* teller(void *arg)
   
    // perform an initial checkin
    teller_check_in(me);
+   #ifdef DEBUG
+   printf("teller %d checks in outside while!\n", me->id); 
+   #endif
 
    while(1)
    {
@@ -121,9 +126,11 @@ void* teller(void *arg)
          {
             printf("teller %d checks out\n", me->id); 
             teller_check_out(me);
-
             // uncomment line below to let program terminate for testing
-            return 0;
+            #ifdef DEBUG
+            printf("teller %d really checks out!\n", me->id); 
+            #endif
+            // return 0;
          } else {
             printf("teller %d checks in\n", me->id);
             teller_check_in(me);
